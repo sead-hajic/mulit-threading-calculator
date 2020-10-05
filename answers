@@ -1,0 +1,45 @@
+Students:
+Nizam Alešević
+Sead Hajić
+
+Answers to questions
+
+Q1.
+  Since all threads are working in parallel all of them can at the same time access the buffer, so
+  it can happen that all operations execute at the same time, changing the buffer and giving wrong result.
+  i.e. 2+3*2
+       5+6
+       11
+  or   2+3*2
+       56
+Q2.
+  All three operations can work on expression at once giving the right result. Error may occur in sentinel thread when
+  displaying results.
+Q3.
+  We need to protect array of chars which is buffer
+Q4.
+  If we have a busy-wait inside one of our critical sections, then our thread will loop to infinity, since it
+  would not allow another thread to execute, hence, nothing will change.
+  If we have sched_yield() then that thread will allow another thread to be executed, since sched_yield() will put
+  thread with busy-wait to the end of the queue, giving chance to all other threads in program.
+  In our case this does not have any effect since the buffer will stay locked.
+Q5.
+  With pthread_mutex_lock other threads wil get out the wait only when the mutex becomes available or the process is killed.
+  If such a behaviour is infinite, wait is undesirable and we can use the variant pthread_mutex_trylock. 
+  We can use it for read/write to a file with read and write threads. When file is being written we can notify the user that file is in write state, and 
+  that it cannot be read. When write thread finished, user can now read from it.
+Q6.
+  num_ops variable does not need to have seperate lock, since it is closely connected to buffer. If operation
+  is done on the buffer num_ops will change, otherwise it shall not.
+Q7.
+  If critical section is too large, there is higher possibility for a deadlock, and less manipulation
+  over the variables.
+Q8.
+  Spin-wait is inefficient without sched_yield() since no other threads would get the change to modify anything
+  and it will spin indefinitely.
+Q9.
+  If the resource is available after spinning, then you have saved a lot of cycles. 
+  If the resource is still not available, then you have spent only a few cycles and can still enter a kernel-based wait.
+Q10.
+  Initial value for semaphore is 1 becouse there is a resource available(buffer).
+  If we specify a larger value that can lead to race conditions.
